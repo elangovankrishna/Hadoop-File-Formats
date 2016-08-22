@@ -1,0 +1,37 @@
+# To enable compression for AVRO serialization to work properly
+
+set hive.exec.compress.output=true;
+set avro.output.codec=snappy;
+
+
+# To create a new HIVE AVRO formatted table 
+# SERPRPO is not needed while creating it but to use them on SPARK later on this helps 
+
+CREATE EXTERNAL TABLE BD.AVRO_TEST2
+ROW FORMAT SERDE
+'org.apache.hadoop.hive.serde2.avro.AvroSerDe'
+WITH SERDEPROPERTIES
+('avro.schema.url'='hdfs://caritas/devel/data/teams/bd/data/enrollment/834_proprietary/MI/schema/final_mi_schema.avsc')
+STORED AS INPUTFORMAT
+'org.apache.hadoop.hive.ql.io.avro.AvroContainerInputFormat'
+OUTPUTFORMAT
+'org.apache.hadoop.hive.ql.io.avro.AvroContainerOutputFormat'
+TBLPROPERTIES
+('avro.schema.url'='hdfs://caritas/devel/data/teams/bd/data/enrollment/834_proprietary/MI/schema/final_mi_schema.avsc')
+;
+
+# Create table with inline column defination for AVRO
+
+CREATE EXTERNAL TABLE BD.AVRO_T2
+ROW FORMAT SERDE
+'org.apache.hadoop.hive.serde2.avro.AvroSerDe'
+STORED AS INPUTFORMAT
+'org.apache.hadoop.hive.ql.io.avro.AvroContainerInputFormat'
+OUTPUTFORMAT
+'org.apache.hadoop.hive.ql.io.avro.AvroContainerOutputFormat'
+TBLPROPERTIES ( 
+'avro.schema.literal'='{
+      "name": "some_schema",
+      "type": "record",
+      "fields":[ { "name":"col1","type":"string", "logicaltype":"timestamp-millis"}]}');
+      
